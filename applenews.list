@@ -15,3 +15,5 @@ DOMAIN,gateway.icloud.com
 DOMAIN,news-nar-aud.apple.com
 DOMAIN,gspe1-ssl.ls.apple.com
 DOMAIN,webproxy.advp.apple.com
+DOMAIN,gsa.apple.com
+DOMAIN,gsas.apple.com
