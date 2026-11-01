@@ -1,0 +1,41 @@
+# NAME: ClaudeCode
+# SOURCE: https://ip.net.coffee/claude/site.html
+# UPDATED: 2026-11-01
+# SCOPE: User-provided website payload plus GEOSITE/keyword fallbacks, deduplicated.
+# TOTAL: 25 (20 domain rules, 2 IP ranges, 1 ASN, 2 GeoSite categories)
+# Requires GeoSite categories anthropic/category-ntp and an ASN database.
+# Policy is selected by RULE-SET in the main configuration.
+# FORMAT: classical / yaml
+payload:
+  # 核心域名
+  - DOMAIN-SUFFIX,anthropic.com
+  - DOMAIN-SUFFIX,claude.ai
+  - DOMAIN-SUFFIX,claude.com
+  - DOMAIN-SUFFIX,clau.de
+  - DOMAIN-SUFFIX,claudemcpclient.com
+  - DOMAIN-SUFFIX,claudemcpcontent.com
+  - DOMAIN-SUFFIX,claudeusercontent.com
+  # CDN 和静态资源
+  - DOMAIN,servd-anthropic-website.b-cdn.net
+  - DOMAIN,anthropic.com.cdn.cloudflare.net
+  # 认证 / 内容
+  - DOMAIN,anthropic.auth0.com
+  - DOMAIN,anthropic-com.ghost.io
+  # 监控和遥测
+  - DOMAIN-SUFFIX,sentry.io
+  - DOMAIN-SUFFIX,statsigapi.net
+  - DOMAIN,browser-intake-us5-datadoghq.com
+  - DOMAIN-KEYWORD,datadog
+  - DOMAIN-KEYWORD,sift
+  # 客服 / 第三方 widget
+  - DOMAIN-SUFFIX,intercom.io
+  - DOMAIN-SUFFIX,intercomcdn.com
+  - DOMAIN,cdn.usefathom.com
+  # IP 段 / ASN 兜底
+  - IP-CIDR,160.79.104.0/21,no-resolve
+  - IP-CIDR6,2607:6bc0::/32,no-resolve
+  - IP-ASN,399358,no-resolve
+  # 分类与关键词兜底（datadog / sift 已在上面列出）
+  - GEOSITE,anthropic
+  - DOMAIN-KEYWORD,sentry
+  - GEOSITE,category-ntp

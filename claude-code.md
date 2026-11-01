@@ -1,25 +1,15 @@
-# Claude Code / Claude 专用分流规则
+# Claude Code 分流规则：网站清单
 
-核对日期：2026-11-01。适用于 Mihomo / Clash.Meta，使用 `classical` + `text`。
+按用户在 2026-11-01 提供的 [Net.Coffee 清单](https://ip.net.coffee/claude/site.html) 整理，使用独立的 `🧩 Claude Code` 策略组。
 
-共 24 条规则：22 条 Claude / Anthropic 相关域名规则、2 条官方 API 入站 IP 网段。匹配流量使用独立的 `🧩 Claude Code` 组。
+共 25 条规则：原 `payload` 中的 22 条，加上 `GEOSITE,anthropic`、`DOMAIN-KEYWORD,sentry` 和 `GEOSITE,category-ntp`。文末与原清单重复的 `datadog`、`sift` 关键词只保留一次，匹配范围不变。
 
-## 覆盖范围
+## 文件和订阅
 
-- API、登录、OAuth、SSO、Claude 自有的安装更新地址、Chrome 桥接、MCP、用户内容和 Artifacts 自有主机。域名后缀会同时匹配其子域名。
-- v2fly `anthropic` 分类里的关联域名，已在文件中单独标注为社区补充，不将它们全部视为官方 CLI 必需端点。
-- `anthropic.auth0.com`、`anthropic.com.cdn.cloudflare.net`、`servd-anthropic-website.b-cdn.net`、`anthropic-com.ghost.io` 等明确指向 Claude 的第三方托管主机；匹配范围限于这些具体主机。
-- 官方 API 入站地址：`160.79.104.0/23` 和 `2607:6bc0::/48`。IP 规则采用 `no-resolve`。
+- [claude-code.yaml](https://raw.githubusercontent.com/wuuduf/ruleset/main/claude-code.yaml)：`payload` YAML 格式，新模板使用此文件。
+- [claude-code.list](https://raw.githubusercontent.com/wuuduf/ruleset/main/claude-code.list)：内容相同的文本格式，保留原链接供已有配置使用。
 
-本次移除了 42 条共享服务规则，包括 GitHub、npm、Google Storage、Homebrew、Googlesource、公共脚本和字体 CDN，以及 Statsig、Sentry、Datadog、Sift、Intercom、Fathom、Cloudflare 通用验证地址。
-
-这些公共请求继续由主配置里的其他规则处理，可能走节点选择、综合 AI、直连或拦截，取决于你原来的配置。移除专用规则并不等于将它们改为直连。Claude 访问这些公共服务时，也按同样的原有分流处理。
-
-## 订阅引用
-
-地址：[claude-code.list](https://raw.githubusercontent.com/wuuduf/ruleset/main/claude-code.list)。
-
-将以下内容合并到已有配置；策略组的候选组须在你的配置中存在，节点占位符由订阅后台填充。已存在 `🧩 Claude Code` 组时不必重复添加。
+将以下内容合并到现有配置。组内的候选策略组须已经存在；节点占位符由订阅后台填充。已经存在 `🧩 Claude Code` 组时不必重复添加。
 
 ```yaml
 # 合并到已有的 proxy-groups / rules / rule-providers，勿重复创建同名顶层键。
@@ -40,31 +30,50 @@ rule-providers:
   ClaudeCode:
     type: http
     behavior: classical
-    format: text
+    format: yaml
     interval: 86400
     proxy: 🚀 节点选择
-    path: ./ruleset/ClaudeCode.list
-    url: https://raw.githubusercontent.com/wuuduf/ruleset/main/claude-code.list
+    path: ./ruleset/ClaudeCode.yaml
+    url: https://raw.githubusercontent.com/wuuduf/ruleset/main/claude-code.yaml
 ```
 
-规则文件本身通过 `🚀 节点选择` 下载。`proxy` 字段决定提供组下载文件的出口，流量分流由上面的 `RULE-SET` 条目决定。更新规则提供组后，客户端才会读取远程修改；这是规则集，不是包含节点的完整订阅。
+使用文本文件时，将提供组的 `format` 改为 `text`，`path` 改为 `./ruleset/ClaudeCode.list`，`url` 使用上面的 `.list` 链接。两份文件包含完全相同的 25 条规则。
 
-## 来源
+规则文件通过 `🚀 节点选择` 下载；`RULE-SET` 把匹配到的连接交给 `🧩 Claude Code`。客户端需要刷新规则提供组，才会读到远程修改。
 
-- [Claude Code 官方网络要求](https://code.claude.com/docs/en/network-config)：用于确认 Claude 核心服务；其中列出的公共服务按用户要求交给原有分流。
-- [Claude Desktop 官方网络要求](https://code.claude.com/docs/en/desktop#network-access-requirements)：Claude 自有 CDN、用户内容及 MCP 子域名。
-- [Claude API 官方 IP 清单](https://platform.claude.com/docs/en/api/ip-addresses)：采用入站网段，未将出站 IPv4 `/21` 用作访问 API 的目的地址清单。
-- [v2fly anthropic 分类](https://github.com/v2fly/domain-list-community/blob/master/data/anthropic)：关联域名补充。
-- [Net.Coffee 清单](https://ip.net.coffee/claude/site.html)：保留具体 Claude 主机，移出其中的通用遥测和客服服务。不再以覆盖该网页全部条目为目标。
+## 本版范围
 
-## 使用
+保留所给清单的核心域名、指定 CDN、认证和内容主机、Sentry / Statsig / Datadog / Sift、Intercom、Fathom，以及下面的兜底：
 
-在 `🧩 Claude Code` 中选择可用的固定节点。终端需要通过客户端的 TUN 或 HTTP 代理进入 Mihomo；是否使用系统代理取决于进程自身。其他 AI 保留原有 `🤖AI` 分流，Google AI 保留原有独立组。
+```text
+IP-CIDR,160.79.104.0/21,no-resolve
+IP-CIDR6,2607:6bc0::/32,no-resolve
+IP-ASN,399358,no-resolve
+GEOSITE,anthropic
+DOMAIN-KEYWORD,datadog
+DOMAIN-KEYWORD,sentry
+DOMAIN-KEYWORD,sift
+GEOSITE,category-ntp
+```
 
-自定义 API 中转、Bedrock / Vertex / Foundry、远程 MCP 和任意 WebFetch 目标需要根据实际域名另行处理。加载与分流验证不能保证真实节点、账号和服务连通性。
+IP 段按用户贴出的 `/21` 和 `/32` 保留。本版以该清单及其兜底为范围，未额外纳入之前的 GitHub、npm、Google Storage、公共脚本和字体 CDN 规则。
+
+关键词规则不区分请求来自哪个程序。其他程序访问包含 `datadog`、`sentry`、`sift` 的域名，或者命中这里的遥测、客服域名时，也会使用 Claude 组。GitHub、npm 和其他未命中本清单的连接继续按主配置的原有规则处理。
+
+## 数据与客户端要求
+
+适用于支持这些规则的 Mihomo / Clash.Meta。`classical` 提供组可使用域名、IP、ASN 和 GeoSite 规则，见 [Mihomo 规则集格式](https://wiki.metacubex.one/config/rule-providers/content/)。
+
+客户端须能加载 `anthropic`、`category-ntp` 两个 GeoSite 分类及 ASN 数据。本机测试使用 Sparkle 缓存的 `geosite.dat` 和 `ASN.mmdb`；其他客户端若没有数据，可能需要联网下载。分类匹配范围取决于客户端实际使用的数据库。
+
+`category-ntp` 是对时间服务域名的分类分流，不是对全部 UDP/123 流量的兜底。实际 UDP 转发取决于客户端和所选节点的支持；NTP 同步时间，这些分流规则不会修改电脑时区。
+
+其他 AI 保留原有 `🤖AI` 分流，Google AI 保留原有独立组。第三方 API 中转、自定义 MCP 和任意工具访问的目标，仍须按实际域名另行处理。
 
 ## 本次验证
 
-Mihomo v1.19.33 成功加载当前模板的 20 个策略组、27 个提供组；Claude 提供组解析出 24 条规则。64 个 Claude 域名 / IP 测试目标命中独立组，42 个移出的共享服务主机按原有规则匹配。ChatGPT、Gemini 的实际匹配检查，以及 61 项 Google AI、2 项公司规则的静态回归检查通过。
+使用本机 Mihomo v1.19.33，当前模板的 20 个策略组、27 个提供组加载成功，Claude 提供组实际解析出全部 25 条规则。网站列出的 21 个具体域名，以及监控关键词、NTP 分类和指定 IP 范围样例均命中 Claude 组。
 
-测试使用本地缓存规则、测试节点和固定的测试解析，验证配置加载与分流匹配，不代表真实节点、账号或服务连通性已验证。
+66 个正向匹配目标、42 个不匹配样例、8 个未纳入的公共服务主机，以及 ChatGPT / Gemini 的分流检查通过。61 项 Google AI 和 2 项公司规则的静态回归检查通过。
+
+测试使用本地缓存规则、测试节点和固定测试解析，验证配置加载与匹配；未验证真实代理节点、Claude 账号、DNS 泄漏或 NTP UDP 连通性。
