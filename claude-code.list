@@ -1,0 +1,99 @@
+# NAME: ClaudeCode
+# FORMAT: Mihomo / Clash.Meta classical text
+# REVIEWED: 2026-11-01
+# TOTAL: 66 (64 domain rules + 2 inbound IP ranges)
+# POLICY: Select the policy in the main configuration; this file has no policy names.
+# SOURCES: https://code.claude.com/docs/en/network-config
+#          https://code.claude.com/docs/en/desktop#network-access-requirements
+#          https://platform.claude.com/docs/en/api/ip-addresses
+#          https://github.com/v2fly/domain-list-community/blob/master/data/anthropic
+#          https://ip.net.coffee/claude/site.html
+#          https://github.com/viewer12/OverseasAI.list/blob/main/rule/Clash/OverseasAI/OverseasAI.list
+# NOTES: See claude-code.md for shared hosts, provenance and limits.
+# No NTP/ASN/GEOSITE dependency. No guarantee for arbitrary MCP, WebFetch or custom API gateways.
+
+# 核心域名：API、OAuth、SSO、下载更新、Chrome 桥接、MCP 和用户内容
+DOMAIN-SUFFIX,anthropic.com
+DOMAIN-SUFFIX,claude.ai
+DOMAIN-SUFFIX,claude.com
+DOMAIN-SUFFIX,claude.app
+DOMAIN-SUFFIX,clau.de
+DOMAIN-SUFFIX,claudemcpclient.com
+DOMAIN-SUFFIX,claudemcpcontent.com
+DOMAIN-SUFFIX,claudeusercontent.com
+
+# 社区补充：v2fly/domain-list-community 的 anthropic 分类，不视为 CLI 必需端点
+DOMAIN-SUFFIX,ant.dev
+DOMAIN-SUFFIX,anthropic.team
+DOMAIN-SUFFIX,antspace.dev
+DOMAIN-SUFFIX,chatbotclaude.com
+DOMAIN-SUFFIX,claude.dev
+DOMAIN-SUFFIX,claude.new
+DOMAIN-SUFFIX,claude.site
+DOMAIN-SUFFIX,claudeacademy.com
+DOMAIN-SUFFIX,claudepages.dev
+DOMAIN-SUFFIX,claudestudio.com
+
+# Net.Coffee 补充的 CDN、旧认证及内容域名：共享平台仅匹配指定主机
+DOMAIN,anthropic.com.cdn.cloudflare.net
+DOMAIN,servd-anthropic-website.b-cdn.net
+DOMAIN,anthropic.auth0.com
+DOMAIN,anthropic-com.ghost.io
+
+# 功能开关和可选错误上报：不代表启用遥测是使用 Claude 的必要条件
+DOMAIN-SUFFIX,statsigapi.net
+DOMAIN-SUFFIX,api.statsig.com
+DOMAIN-SUFFIX,sentry.io
+
+# Datadog：包含官方 US5 端点及服务商公开的其他商业区域端点；不使用 datadog 关键词
+DOMAIN-SUFFIX,browser-intake-datadoghq.com
+DOMAIN-SUFFIX,browser-intake-us3-datadoghq.com
+DOMAIN-SUFFIX,browser-intake-us5-datadoghq.com
+DOMAIN-SUFFIX,browser-intake-datadoghq.eu
+DOMAIN-SUFFIX,browser-intake-ap1-datadoghq.com
+DOMAIN-SUFFIX,browser-intake-ap2-datadoghq.com
+DOMAIN-SUFFIX,browser-intake-uk1-datadoghq.com
+DOMAIN,http-intake.logs.datadoghq.com
+DOMAIN,http-intake.logs.us3.datadoghq.com
+DOMAIN,http-intake.logs.us5.datadoghq.com
+DOMAIN,http-intake.logs.datadoghq.eu
+DOMAIN,http-intake.logs.ap1.datadoghq.com
+DOMAIN,http-intake.logs.ap2.datadoghq.com
+DOMAIN,http-intake.logs.uk1.datadoghq.com
+DOMAIN,www.datadoghq-browser-agent.com
+
+# Sift：按服务商域名限定范围；来自网页的扩展需求，不视为官方 CLI 必需端点
+DOMAIN-SUFFIX,sift.com
+DOMAIN-SUFFIX,siftscience.com
+
+# 客服、统计和共享网页验证服务
+DOMAIN-SUFFIX,intercom.io
+DOMAIN-SUFFIX,intercomcdn.com
+DOMAIN,cdn.usefathom.com
+DOMAIN,challenges.cloudflare.com
+
+# 安装、插件、包管理和版本检查：共享主机的其他流量也会采用同一策略
+DOMAIN,storage.googleapis.com
+DOMAIN,registry.npmjs.org
+DOMAIN,formulae.brew.sh
+DOMAIN,github.com
+DOMAIN,api.github.com
+DOMAIN,codeload.github.com
+DOMAIN,ssh.github.com
+DOMAIN,raw.githubusercontent.com
+DOMAIN,objects.githubusercontent.com
+DOMAIN,release-assets.githubusercontent.com
+DOMAIN-SUFFIX,googlesource.com
+
+# Artifacts 官方文档列出的可选字体和第三方脚本 CDN：同样属于共享主机
+DOMAIN,fonts.googleapis.com
+DOMAIN,fonts.gstatic.com
+DOMAIN,cdnjs.cloudflare.com
+DOMAIN,cdn.jsdelivr.net
+DOMAIN,cdn.tailwindcss.com
+DOMAIN,code.jquery.com
+DOMAIN,unpkg.com
+
+# IP 兜底：仅采用官方 API 入站网段；no-resolve 不会为匹配主动解析域名
+IP-CIDR,160.79.104.0/23,no-resolve
+IP-CIDR6,2607:6bc0::/48,no-resolve
